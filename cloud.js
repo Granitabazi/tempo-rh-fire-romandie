@@ -7,6 +7,7 @@
   let profile = null;
   let organizationId = null;
   let syncTimer = null;
+  let cloudReady = false;
 
   function showApp() { authScreen()?.classList.add("hidden"); }
   function showAuth() { authScreen()?.classList.remove("hidden"); }
@@ -52,12 +53,14 @@
     }
     if(!configured){showApp();status("Mode local · configuration cloud requise");return;}
     client=window.supabase.createClient(config.supabaseUrl,config.supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage}});
+    cloudReady=true;
     const { data:{ session } }=await client.auth.getSession();
     if(session){try{await resolveAccess(session.user);showApp();setTimeout(loadSnapshot,200)}catch(e){message("Votre compte n’est pas encore rattaché à l’entreprise.");showAuth()}}else showAuth();
     client.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT")showAuth();if(event==="TOKEN_REFRESHED"&&session)status("Session sécurisée")});
   }
   document.addEventListener("DOMContentLoaded",()=>{
-    document.getElementById("authForm")?.addEventListener("submit",async e=>{e.preventDefault();message("");if(!configured)return message("La connexion cloud n’est pas encore configurée.");const button=e.submitter;button.disabled=true;button.textContent="Connexion…";const email=document.getElementById("authEmail").value,password=document.getElementById("authPassword").value;try{const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;if(!data.user)throw new Error("Utilisateur introuvable");await resolveAccess(data.user);showApp();setTimeout(loadSnapshot,200)}catch(error){await client.auth.signOut({scope:"local"}).catch(()=>{});message(error?.message?.includes("Invalid login")?"Adresse e-mail ou mot de passe incorrect.":error?.message?.includes("profile")?"Ce compte n’est pas rattaché à Fire Romandie.":"Connexion impossible. Contactez l’administrateur.")}finally{button.disabled=false;button.textContent="Se connecter"}});
+    window.TEMPO_AUTH_ATTACHED=true;
+    document.getElementById("authForm")?.addEventListener("submit",async e=>{e.preventDefault();const button=document.querySelector('#authForm button[type="submit"]');message("Vérification en cours…");if(!configured)return message("La connexion cloud n’est pas encore configurée.");if(!cloudReady||!client)return message("Le service de connexion démarre. Réessayez dans quelques secondes.");if(button){button.disabled=true;button.textContent="Connexion…"}const email=document.getElementById("authEmail").value.trim(),password=document.getElementById("authPassword").value;try{const {data,error}=await client.auth.signInWithPassword({email,password});if(error)throw error;if(!data?.user)throw new Error("Utilisateur introuvable");message("Compte reconnu, ouverture…");await resolveAccess(data.user);showApp();setTimeout(loadSnapshot,200)}catch(error){await client.auth.signOut({scope:"local"}).catch(()=>{});const detail=String(error?.message||"");message(detail.includes("Invalid login")?"Adresse e-mail ou mot de passe incorrect.":detail.includes("JSON object requested")||detail.includes("0 rows")?"Ce compte existe mais son profil Fire Romandie est manquant.":`Connexion impossible: ${detail||"erreur inconnue"}`)}finally{if(button){button.disabled=false;button.textContent="Se connecter"}}});
     document.getElementById("resetPasswordBtn")?.addEventListener("click",async()=>{const email=document.getElementById("authEmail").value;if(!email)return message("Indiquez d’abord votre adresse e-mail.");const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});message(error?"Envoi impossible.":"Un e-mail de réinitialisation a été envoyé.")});
     initialize().catch(()=>{showAuth();message("Impossible de joindre le service de connexion.")});
   });
