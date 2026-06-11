@@ -1,0 +1,59 @@
+TEMPO RH - PROTOTYPE D'APPLICATION RH
+
+CONNEXION CLOUD
+Le projet Supabase Fire Romandie est configuré dans config.js.
+Ne remplacez jamais la clé publique par une Secret key ou une clé service_role.
+
+OUVRIR L'APPLICATION
+1. Ouvrez le dossier rh-flow.
+2. Double-cliquez sur index.html.
+3. L'application s'ouvre dans votre navigateur.
+
+FONCTIONS INCLUSES
+- Timbrage d'arrivée et de départ
+- Suivi des heures et du solde
+- Demandes de congé et d'absence
+- Historique et compteurs de vacances
+- Planning de présence de l'équipe
+- Validation manager des demandes
+- Annuaire des collaborateurs
+- Indicateurs et rapports RH
+- Affectation des heures aux chantiers
+- Rendement par chantier et par collaborateur
+- Projection des heures finales et alertes de dépassement
+- Choix obligatoire du chantier au démarrage du timbrage
+- Affectation automatique du temps au chantier à la fin du timbrage
+- Accès au rendement réservé au rôle RH / Administrateur
+- Projets de chantier avec plans importés
+- Tâches positionnées directement sur le plan
+- Responsables, priorités, échéances, photos et statuts
+- Journal horodaté de toutes les actions
+- Export CSV de la traçabilité
+- QR code d'accès direct à chaque projet
+- Fiche technique d'obturation sur chaque tâche
+- Statuts métier: à faire, documenté, modification, réparation, vérifié
+- Emplacement par niveau, traversée, matériau, support et forme
+- Dimensions dynamiques selon une forme ronde ou carrée
+- Code couleur automatique par statut: rouge, orange, jaune, violet, vert
+- Bande Wrap conditionnelle pour la tuyauterie
+- Coffrage conditionnel pour une obturation en mortier
+- Isolation autour de la gaine conditionnelle pour la ventilation
+
+CALCUL DU RENDEMENT CHANTIER
+Rendement = heures budgétées correspondant à l'avancement / heures consommées.
+100% signifie que le chantier respecte le budget d'heures.
+Plus de 100% signifie une avance sur le budget.
+Moins de 100% signifie que plus d'heures que prévu ont été consommées.
+
+Les demandes et l'état du timbrage sont conservés localement dans le
+navigateur utilisé. Les données affichées au départ sont des exemples.
+
+IMPORTANT
+Cette version est un prototype de démonstration. Pour une utilisation réelle
+en entreprise, il faudra ajouter un serveur sécurisé, une base de données,
+des comptes utilisateurs, des droits d'accès, des sauvegardes et les règles
+de conformité applicables à votre société.
+
+Les QR codes du prototype utilisent l'adresse locale du fichier. Pour être
+scannés depuis les téléphones du chantier, l'application devra être hébergée
+sur une adresse HTTPS accessible aux collaborateurs.

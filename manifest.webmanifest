@@ -1,0 +1,14 @@
+{
+  "name": "Tempo RH - Fire Romandie",
+  "short_name": "Tempo RH",
+  "description": "Timbrage, ressources humaines et suivi de chantier",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f3ed",
+  "theme_color": "#17352d",
+  "lang": "fr-CH",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

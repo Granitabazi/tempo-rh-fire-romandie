@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#17352d">
+  <meta name="description" content="Gestion RH, timbrage et suivi de chantier Fire Romandie">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <title>Tempo RH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="auth-screen" id="authScreen">
+    <div class="auth-card">
+      <div class="brand auth-brand"><span class="brand-mark">T</span><span>Tempo<span>RH</span></span></div>
+      <p class="eyebrow">FIRE ROMANDIE SA</p><h1>Bienvenue</h1><p>Connectez-vous à votre espace de travail.</p>
+      <form id="authForm"><label>Adresse e-mail<input type="email" id="authEmail" autocomplete="email" required placeholder="prenom@fireromandie.ch"></label><label>Mot de passe<input type="password" id="authPassword" autocomplete="current-password" required minlength="8"></label><button class="primary-btn" type="submit">Se connecter</button></form>
+      <button class="auth-link" id="resetPasswordBtn">Mot de passe oublié ?</button><div class="auth-message" id="authMessage"></div>
+    </div>
+  </div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">T</span><span>Tempo<span>RH</span></span></div>
+      <nav id="mainNav">
+        <button class="nav-item active" data-view="dashboard"><span>⌂</span> Vue d'ensemble</button>
+        <button class="nav-item" data-view="clock"><span>◷</span> Mon temps</button>
+        <button class="nav-item" data-view="leave"><span>◇</span> Congés & absences</button>
+        <button class="nav-item" data-view="planning"><span>▦</span> Planning d'équipe</button>
+        <button class="nav-item" data-view="fieldReports"><span>▧</span> Rapports chantier</button>
+        <button class="nav-item hr-only" data-view="sites"><span>▤</span> Chantiers & rendement</button>
+        <div class="nav-label">GESTION RH</div>
+        <button class="nav-item" data-view="approvals"><span>✓</span> Validations <b id="approvalBadge">3</b></button>
+        <button class="nav-item" data-view="people"><span>♙</span> Collaborateurs</button>
+        <button class="nav-item" data-view="reports"><span>↗</span> Rapports</button>
+      </nav>
+      <div class="sidebar-card">
+        <div class="mini-icon">?</div>
+        <strong>Besoin d'aide ?</strong>
+        <p>Consultez le guide d'utilisation de votre espace RH.</p>
+        <button id="helpBtn">Ouvrir le guide</button>
+      </div>
+      <div class="profile-mini">
+        <div class="avatar coral">SM</div>
+        <div><strong id="currentUserName">Sophie Martin</strong><span id="currentRoleLabel">Administratrice RH</span></div>
+        <button id="logoutBtn" title="Se déconnecter">↪</button>
+      </div>
+      <label class="role-switch">MODE DÉMO<select id="roleSelector"><option value="hr">RH / Administrateur</option><option value="employee">Employé</option></select></label>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="mobile-menu" id="menuBtn">☰</button>
+        <div class="today"><span id="todayLabel"></span><strong id="liveClock"></strong></div>
+        <div class="top-actions">
+          <button class="icon-btn" id="notifBtn">♢<i></i></button>
+          <div class="company"><span class="company-logo">FR</span><div><small>SOCIÉTÉ</small><strong>Fire Romandie SA</strong></div><span>⌄</span></div>
+        </div>
+      </header>
+
+      <section class="view active" id="dashboard">
+        <div class="hero-row">
+          <div><p class="eyebrow">ESPACE COLLABORATEUR</p><h1>Bonjour Sophie <span>👋</span></h1><p class="subtitle">Voici l'essentiel de votre journée et de votre équipe.</p></div>
+          <button class="primary-btn" data-open-leave>＋ Nouvelle demande</button>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="card clock-card">
+            <div class="card-head"><div><span class="pill green">TEMPS DE TRAVAIL</span><h2>Votre journée</h2></div><span class="status-dot">● En cours</span></div>
+            <div class="clock-display"><strong id="workedTime">03:42</strong><span>/ 08:12 attendues</span></div>
+            <div class="active-site" id="activeSiteLabel"><span>CHANTIER ACTUEL</span><strong>Résidence du Lac</strong></div>
+            <div class="progress"><i id="dayProgress"></i></div>
+            <div class="clock-meta"><span>Arrivée <b id="arrivalTime">08:02</b></span><span>Pause <b id="breakTime">00:31</b></span><span>Départ estimé <b id="estimatedEnd">16:45</b></span></div>
+            <button class="clock-button active" id="clockButton"><span class="stop-icon"></span><b>Terminer la journée</b><small id="clockButtonHint">Timbrage en cours depuis 08:02</small></button>
+          </article>
+
+          <article class="card balances-card">
+            <div class="card-head"><div><span class="pill sand">MES SOLDES</span><h2>Congés & compteurs</h2></div><button class="link-btn" data-view-link="leave">Voir le détail →</button></div>
+            <div class="balance-list">
+              <div class="balance-item"><div class="balance-icon sun">☀</div><div><span>Vacances 2026</span><strong>18.5 <small>jours disponibles</small></strong><div class="tiny-progress"><i style="width:62%"></i></div><small>11.5 jours pris sur 30</small></div></div>
+              <div class="balance-item"><div class="balance-icon mint">◷</div><div><span>Heures supplémentaires</span><strong>+12h 24 <small>de solde</small></strong><div class="tiny-progress"><i style="width:74%"></i></div><small>Mis à jour aujourd'hui</small></div></div>
+              <div class="balance-item"><div class="balance-icon blue">✦</div><div><span>Récupération</span><strong>2.0 <small>jours disponibles</small></strong><div class="tiny-progress"><i style="width:40%"></i></div><small>À utiliser avant le 31.12</small></div></div>
+            </div>
+          </article>
+
+          <article class="card team-card wide">
+            <div class="card-head"><div><span class="pill lilac">AUJOURD'HUI</span><h2>Présence de l'équipe</h2></div><button class="link-btn" data-view-link="planning">Planning complet →</button></div>
+            <div class="team-summary"><span><b>8</b> présents</span><span><b>2</b> absents</span><span><b>1</b> à distance</span></div>
+            <div class="people-strip" id="todayPeople"></div>
+          </article>
+
+          <article class="card requests-card">
+            <div class="card-head"><div><span class="pill sky">MES DEMANDES</span><h2>Dernières demandes</h2></div></div>
+            <div id="myRequests"></div>
+            <button class="secondary-btn full" data-open-leave>Faire une demande d'absence</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="clock">
+        <div class="page-title"><div><p class="eyebrow">SUIVI PERSONNEL</p><h1>Mon temps</h1><p class="subtitle">Timbrages, heures et corrections.</p></div><button class="primary-btn" id="clockHeaderBtn">◷ Timbrer maintenant</button></div>
+        <div class="kpi-grid"><div class="kpi"><span>Cette semaine</span><strong>31h 18</strong><small>Objectif: 41h</small></div><div class="kpi"><span>Solde mensuel</span><strong class="positive">+4h 12</strong><small>Juin 2026</small></div><div class="kpi"><span>Jours travaillés</span><strong>8 / 22</strong><small>Ce mois</small></div><div class="kpi"><span>Taux d'activité</span><strong>100%</strong><small>Lun–Ven</small></div></div>
+        <div class="card table-card"><div class="card-head"><div><h2>Relevé de la semaine</h2><p>Du 8 au 14 juin 2026</p></div><button class="outline-btn">Exporter</button></div><div class="table-wrap"><table><thead><tr><th>Jour</th><th>Arrivée</th><th>Pause</th><th>Départ</th><th>Durée</th><th>Solde</th><th>Statut</th></tr></thead><tbody id="timesheetBody"></tbody></table></div></div>
+      </section>
+
+      <section class="view" id="leave">
+        <div class="page-title"><div><p class="eyebrow">TEMPS LIBRE</p><h1>Congés & absences</h1><p class="subtitle">Gérez vos demandes et consultez vos soldes.</p></div><button class="primary-btn" data-open-leave>＋ Nouvelle demande</button></div>
+        <div class="leave-layout"><div><div class="balance-cards"><div class="mini-balance sun-bg"><span>Vacances</span><strong>18.5 j</strong><small>sur 30 jours</small></div><div class="mini-balance mint-bg"><span>Récupération</span><strong>2.0 j</strong><small>disponibles</small></div><div class="mini-balance blue-bg"><span>Formation</span><strong>3.0 j</strong><small>sur 5 jours</small></div></div><div class="card table-card"><div class="card-head"><h2>Historique des demandes</h2><select><option>Cette année</option></select></div><div class="table-wrap"><table><thead><tr><th>Type</th><th>Période</th><th>Durée</th><th>Demandé le</th><th>Statut</th></tr></thead><tbody id="leaveHistory"></tbody></table></div></div></div><aside class="card next-leave"><span class="pill green">PROCHAINE ABSENCE</span><div class="big-date"><strong>22</strong><span>JUIN<br>2026</span></div><h3>Vacances</h3><p>Du 22 au 26 juin · 5 jours</p><div class="countdown">Dans <strong>11 jours</strong></div></aside></div>
+      </section>
+
+      <section class="view" id="planning">
+        <div class="page-title"><div><p class="eyebrow">VUE COLLECTIVE</p><h1>Planning d'équipe</h1><p class="subtitle">Visualisez les présences et absences en un coup d'œil.</p></div><div class="month-nav"><button>‹</button><strong>Juin 2026</strong><button>›</button></div></div>
+        <div class="card calendar-card"><div class="calendar-legend"><span><i class="dot present"></i>Présent</span><span><i class="dot remote"></i>Télétravail</span><span><i class="dot holiday"></i>Vacances</span><span><i class="dot sick"></i>Maladie</span></div><div class="calendar-grid" id="calendarGrid"></div></div>
+      </section>
+
+      <section class="view" id="fieldReports">
+        <div class="page-title"><div><p class="eyebrow">SUIVI TERRAIN</p><h1>Rapports chantier</h1><p class="subtitle">Plans, tâches, photos et traçabilité centralisés par projet.</p></div><div class="page-actions"><button class="outline-btn" id="showProjectQr">▦ QR code</button><button class="primary-btn" id="openProjectModal">＋ Nouveau projet</button></div></div>
+        <div class="project-toolbar"><label>PROJET ACTIF<select id="fieldProjectSelector"></select></label><div class="project-meta"><span id="fieldProjectClient">—</span><strong id="fieldProjectCode">—</strong></div><button class="outline-btn" id="uploadPlanBtn">↑ Importer un plan</button><input type="file" id="planFileInput" accept="image/*" hidden></div>
+        <div class="field-kpis"><div><span>À faire</span><strong id="openTaskCount">0</strong></div><div><span>À traiter / documenter</span><strong id="activeTaskCount">0</strong></div><div><span>Complétées et vérifiées</span><strong id="doneTaskCount">0</strong></div><div><span>Dernière activité</span><strong id="lastFieldActivity">—</strong></div></div>
+        <div class="field-layout">
+          <div class="card plan-card"><div class="card-head"><div><span class="pill green">PLAN INTERACTIF</span><h2 id="planTitle">Plan principal</h2></div><div class="plan-tools"><button class="outline-btn active" id="addTaskMode">＋ Ajouter une tâche</button><button class="outline-btn" id="fitPlanBtn">Centrer</button></div></div><div class="plan-hint" id="planHint">Cliquez sur le plan à l'endroit où intervenir.</div><div class="plan-stage" id="planStage"><img id="planImage" alt="Plan du chantier"><div id="planPins"></div><div class="empty-plan" id="emptyPlan"><span>▧</span><strong>Aucun plan importé</strong><small>Importez une image de plan pour commencer.</small></div></div><div class="plan-legend"><span><i class="task-dot todo"></i>À faire</span><span><i class="task-dot documented"></i>Effectué/documenté</span><span><i class="task-dot change"></i>Modification</span><span><i class="task-dot repair"></i>Réparation</span><span><i class="task-dot verified"></i>Complété/vérifié</span></div></div>
+          <aside class="card task-panel"><div class="card-head"><div><span class="pill sand">TÂCHES DU PLAN</span><h2>Interventions</h2></div><select id="taskStatusFilter"><option value="all">Toutes</option><option value="todo">À faire</option><option value="documented">Effectuées et documentées</option><option value="change">Modifications à apporter</option><option value="repair">Réparations</option><option value="verified">Complétées et vérifiées</option></select></div><div id="fieldTaskList" class="field-task-list"></div></aside>
+        </div>
+        <div class="card trace-card"><div class="card-head"><div><span class="pill sky">TRAÇABILITÉ</span><h2>Journal du projet</h2></div><button class="outline-btn" id="exportTraceBtn">↓ Exporter</button></div><div class="trace-list" id="traceList"></div></div>
+      </section>
+
+      <section class="view hr-only" id="sites">
+        <div class="page-title"><div><p class="eyebrow">PILOTAGE OPÉRATIONNEL</p><h1>Chantiers & rendement</h1><p class="subtitle">Reliez les heures timbrées à l'avancement réel de chaque chantier.</p></div><button class="primary-btn" id="openSiteTime">＋ Saisir des heures</button></div>
+        <div class="kpi-grid site-kpis"><div class="kpi"><span>Rendement global</span><strong id="globalEfficiency">—</strong><small>Heures prévues réalisées / heures consommées</small></div><div class="kpi"><span>Heures consommées</span><strong id="totalSiteHours">—</strong><small id="totalBudgetHours">—</small></div><div class="kpi"><span>Coût de main-d'œuvre</span><strong id="totalLabourCost">—</strong><small>Selon les coûts horaires internes</small></div><div class="kpi"><span>Chantiers à surveiller</span><strong id="sitesAtRisk">—</strong><small>Rendement inférieur à 90%</small></div></div>
+        <div class="site-layout"><div class="card table-card"><div class="card-head"><div><h2>Suivi des chantiers</h2><p>Budget, avancement et consommation</p></div><select id="siteStatusFilter"><option value="all">Tous les chantiers</option><option value="active">En cours</option><option value="done">Terminés</option></select></div><div class="table-wrap"><table><thead><tr><th>Chantier</th><th>Avancement</th><th>Budget</th><th>Consommé</th><th>Rendement</th><th>Écart final estimé</th><th>État</th></tr></thead><tbody id="sitesBody"></tbody></table></div></div><aside class="card efficiency-card"><span class="pill sand">ÉQUIPE</span><h2>Rendement collaborateurs</h2><p>Calculé sur les heures affectées aux chantiers.</p><div id="employeeEfficiency"></div></aside></div>
+        <div class="card site-detail-card"><div class="card-head"><div><span class="pill green">DÉTAIL</span><h2 id="selectedSiteTitle">Sélectionnez un chantier</h2></div><div class="site-detail-actions"><select id="selectedSite"></select><button class="outline-btn" id="advanceSiteBtn">Mettre à jour l'avancement</button></div></div><div class="site-detail-grid"><div><span>Heures prévues au stade actuel</span><strong id="earnedHours">—</strong></div><div><span>Heures consommées</span><strong id="actualHours">—</strong></div><div><span>Projection à terminaison</span><strong id="forecastHours">—</strong></div><div><span>Écart budgétaire projeté</span><strong id="forecastVariance">—</strong></div></div><div class="table-wrap"><table><thead><tr><th>Collaborateur</th><th>Date</th><th>Activité</th><th>Heures</th><th>Coût interne</th></tr></thead><tbody id="siteEntriesBody"></tbody></table></div></div>
+      </section>
+
+      <section class="view" id="approvals">
+        <div class="page-title"><div><p class="eyebrow">ESPACE MANAGER</p><h1>Demandes à valider</h1><p class="subtitle">Traitez les demandes de votre équipe.</p></div></div>
+        <div class="approval-layout"><div id="approvalList"></div><aside class="card manager-stats"><h3>Ce mois-ci</h3><div><strong>12</strong><span>demandes traitées</span></div><div><strong>92%</strong><span>validées</span></div><div><strong>1.4 j</strong><span>délai moyen</span></div></aside></div>
+      </section>
+
+      <section class="view" id="people">
+        <div class="page-title"><div><p class="eyebrow">DOSSIERS RH</p><h1>Collaborateurs</h1><p class="subtitle">Les informations essentielles de votre équipe.</p></div><button class="primary-btn">＋ Ajouter un collaborateur</button></div>
+        <div class="toolbar"><label>⌕ <input id="peopleSearch" placeholder="Rechercher un collaborateur"></label><select><option>Tous les départements</option><option>Direction</option><option>Technique</option><option>Administration</option></select></div><div class="people-grid" id="peopleGrid"></div>
+      </section>
+
+      <section class="view" id="reports">
+        <div class="page-title"><div><p class="eyebrow">ANALYSE RH</p><h1>Rapports</h1><p class="subtitle">Pilotez le temps de travail et l'absentéisme.</p></div><button class="outline-btn">↓ Exporter le rapport</button></div>
+        <div class="kpi-grid"><div class="kpi"><span>Taux de présence</span><strong>94.8%</strong><small class="positive">+1.2% vs mai</small></div><div class="kpi"><span>Absentéisme</span><strong>3.1%</strong><small>-0.4% vs mai</small></div><div class="kpi"><span>Heures supplémentaires</span><strong>86h</strong><small>11 collaborateurs</small></div><div class="kpi"><span>Solde vacances moyen</span><strong>16.2 j</strong><small>Par collaborateur</small></div></div>
+        <div class="report-grid"><div class="card chart-card"><div class="card-head"><h2>Présence mensuelle</h2><select><option>6 derniers mois</option></select></div><div class="bar-chart" id="barChart"></div></div><div class="card donut-card"><div class="card-head"><h2>Motifs d'absence</h2></div><div class="donut"><div><strong>47</strong><span>jours</span></div></div><ul><li><i style="background:#ec8167"></i>Vacances <b>61%</b></li><li><i style="background:#87b8ac"></i>Maladie <b>23%</b></li><li><i style="background:#e9c76b"></i>Formation <b>10%</b></li><li><i style="background:#a9a0d3"></i>Autres <b>6%</b></li></ul></div></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="leaveModal">
+    <div class="modal">
+      <button class="modal-close" data-close-modal>×</button><span class="pill green">NOUVELLE DEMANDE</span><h2>Demander une absence</h2><p>Votre responsable recevra une notification.</p>
+      <form id="leaveForm"><label>Type d'absence<select id="leaveType" required><option value="Vacances">Vacances</option><option value="Récupération">Récupération</option><option value="Formation">Formation</option><option value="Maladie">Maladie</option><option value="Congé spécial">Congé spécial</option></select></label><div class="form-row"><label>Du<input type="date" id="leaveStart" required></label><label>Au<input type="date" id="leaveEnd" required></label></div><label>Commentaire<textarea id="leaveComment" placeholder="Ajoutez une précision (facultatif)"></textarea></label><div class="duration-preview"><span>Durée estimée</span><strong id="durationPreview">0 jour</strong></div><div class="modal-actions"><button type="button" class="secondary-btn" data-close-modal>Annuler</button><button type="submit" class="primary-btn">Envoyer la demande</button></div></form>
+    </div>
+  </div>
+  <div class="modal-backdrop" id="siteTimeModal"><div class="modal"><button class="modal-close" data-close-site-modal>×</button><span class="pill sand">HEURES CHANTIER</span><h2>Affecter un timbrage</h2><p>Les heures saisies alimentent immédiatement le rendement.</p><form id="siteTimeForm"><label>Collaborateur<select id="siteEmployee" required></select></label><label>Chantier<select id="siteProject" required></select></label><div class="form-row"><label>Date<input type="date" id="siteDate" required></label><label>Heures travaillées<input type="number" id="siteHours" min="0.25" max="24" step="0.25" value="8" required></label></div><label>Activité<select id="siteActivity"><option>Pose et installation</option><option>Préparation</option><option>Déplacement</option><option>Finitions</option><option>Contrôle et réception</option><option>Administration chantier</option></select></label><div class="duration-preview"><span>Coût interne estimé</span><strong id="siteCostPreview">CHF 0.00</strong></div><div class="modal-actions"><button type="button" class="secondary-btn" data-close-site-modal>Annuler</button><button type="submit" class="primary-btn">Enregistrer les heures</button></div></form></div></div>
+  <div class="modal-backdrop" id="clockSiteModal"><div class="modal clock-site-modal"><button class="modal-close" data-close-clock-modal>×</button><span class="pill green">NOUVEAU TIMBRAGE</span><h2>Sur quel chantier travaillez-vous ?</h2><p>Le temps sera automatiquement affecté au chantier sélectionné.</p><form id="clockSiteForm"><label>Chantier<select id="clockSiteProject" required></select></label><label>Activité<select id="clockSiteActivity"><option>Pose et installation</option><option>Préparation</option><option>Déplacement</option><option>Finitions</option><option>Contrôle et réception</option><option>Administration chantier</option></select></label><div class="site-choice-info"><span>Le chronomètre démarrera après validation.</span><strong>Le rendement est visible uniquement par les RH.</strong></div><div class="modal-actions"><button type="button" class="secondary-btn" data-close-clock-modal>Annuler</button><button type="submit" class="primary-btn">◷ Démarrer le timbrage</button></div></form></div></div>
+  <div class="modal-backdrop" id="projectModal"><div class="modal"><button class="modal-close" data-close-project-modal>×</button><span class="pill green">NOUVEAU PROJET</span><h2>Créer un projet chantier</h2><p>Ajoutez ensuite un plan et positionnez les interventions.</p><form id="projectForm"><label>Nom du projet<input id="newProjectName" required placeholder="Ex. Résidence Bellevue"></label><div class="form-row"><label>Code projet<input id="newProjectCode" required placeholder="CH-26031"></label><label>Client<input id="newProjectClient" required placeholder="Nom du client"></label></div><label>Adresse<input id="newProjectAddress" placeholder="Adresse du chantier"></label><label>Plan initial (image)<input type="file" id="newProjectPlan" accept="image/*"></label><div class="modal-actions"><button type="button" class="secondary-btn" data-close-project-modal>Annuler</button><button type="submit" class="primary-btn">Créer le projet</button></div></form></div></div>
+  <div class="modal-backdrop" id="fieldTaskModal"><div class="modal technical-task-modal"><button class="modal-close" data-close-task-modal>×</button><span class="pill sand">TÂCHE SUR PLAN</span><h2>Créer une intervention</h2><p id="taskPositionText">Position sélectionnée sur le plan.</p><form id="fieldTaskForm">
+    <div class="form-section"><h3>Informations de la tâche</h3><div class="form-row"><label>Statut de la tâche<select id="fieldTaskStatus"><option value="todo">À faire</option><option value="documented">Effectué et documenté</option><option value="change">Modification à apporter</option><option value="repair">Réparation</option><option value="verified">Complété et vérifié</option></select></label><label>Destinataire<input id="fieldTaskRecipient" readonly></label></div><label>Emplacement<select id="fieldTaskLocation"><option>Sous-sol -2</option><option>Sous-sol -1</option><option>Rez-de-chaussée</option><option>Étage 1</option><option>Étage 2</option><option>Étage 3</option><option>Étage 4</option><option>Étage 5</option><option>Étage 6</option><option>Étage 7</option><option>Étage 8</option><option>Étage 9</option><option>Étage 10</option><option>Étage 11</option><option>Étage 12</option></select></label></div>
+    <div class="form-section"><h3>Type d'obturation</h3><div class="form-row"><label>Élément traversant<select id="fieldTaskPenetration"><option>Tuyauterie</option><option>Ventilation</option><option>Clapet coupe-feu</option><option>Électrique</option><option>Mixte</option><option>Vide</option></select></label><label>Matériau d'obturation<select id="fieldTaskMaterial"><option>Mortier</option><option>Coupe-feu</option></select></label></div><div class="conditional-options"><label id="wrapField">Bande Wrap<select id="fieldTaskWrap"><option>Non</option><option>Oui</option></select></label><label id="formworkField">Coffrage<select id="fieldTaskFormwork"><option>Non</option><option>Oui</option></select></label><label id="ductInsulationField" class="hidden">Isolation autour de la gaine<select id="fieldTaskDuctInsulation"><option>Non</option><option>Oui</option></select></label></div><div class="form-row"><label>Mur / dalle<select id="fieldTaskSupport"><option>Mur</option><option>Dalle</option></select></label><label>Forme d'obturation<select id="fieldTaskShape"><option value="round">Ronde</option><option value="square">Carrée</option></select></label></div></div>
+    <div class="form-section"><h3>Dimensions</h3><div id="roundDimensions" class="form-row dimension-group"><label>Diamètre (cm)<input type="number" id="fieldTaskDiameter" min="0" step="0.1" placeholder="0.0"></label><label>Profondeur (m)<input type="number" id="fieldTaskRoundDepth" min="0" step="0.01" placeholder="0.00"></label></div><div id="squareDimensions" class="dimension-grid hidden"><label>Longueur (m)<input type="number" id="fieldTaskLength" min="0" step="0.01" placeholder="0.00"></label><label>Largeur (m)<input type="number" id="fieldTaskWidth" min="0" step="0.01" placeholder="0.00"></label><label>Hauteur (m)<input type="number" id="fieldTaskHeight" min="0" step="0.01" placeholder="0.00"></label><label>Profondeur (m)<input type="number" id="fieldTaskSquareDepth" min="0" step="0.01" placeholder="0.00"></label></div><label class="quantity-field">Nombre<input type="number" id="fieldTaskQuantity" min="1" step="1" value="1" required></label></div>
+    <div class="form-section"><h3>Documentation</h3><label>Remarques<textarea id="fieldTaskRemarks" placeholder="Observations, travaux à effectuer, réserves..."></textarea></label><label>Photo ou document<input type="file" id="fieldTaskPhoto" accept="image/*"></label></div><div class="modal-actions"><button type="button" class="secondary-btn" data-close-task-modal>Annuler</button><button type="submit" class="primary-btn">Créer la tâche</button></div></form></div></div>
+  <div class="modal-backdrop" id="qrModal"><div class="modal qr-modal"><button class="modal-close" data-close-qr-modal>×</button><span class="pill green">ACCÈS TERRAIN</span><h2>QR code du projet</h2><p>À imprimer et afficher sur le chantier. Le scan ouvre directement le projet.</p><div class="qr-box"><img id="projectQrImage" alt="QR code du projet"><div><strong id="qrProjectName">—</strong><span id="qrProjectCode">—</span><small id="qrProjectUrl">—</small></div></div><div class="modal-actions"><button class="secondary-btn" type="button" id="copyQrLink">Copier le lien</button><button class="primary-btn" type="button" id="printQrBtn">Imprimer</button></div></div></div>
+  <div class="toast" id="toast"><span>✓</span><div><strong>Action effectuée</strong><small></small></div></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="cloud.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
